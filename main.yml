@@ -1,0 +1,35 @@
+- hosts: all
+  vars:
+    reboot_var: true
+  tasks: 
+  - name: Install Prerequisites
+    yum:
+      name: 
+      - vim
+      - epel-release
+      - kernel
+    register: yum
+ 
+  - name: Disable SElinux
+    selinux:
+      state: disabled 
+    register: selinux
+
+
+  - name: Reboot
+    reboot: 
+      reboot_timeout: 600
+    when: yum.changed or selinux.changed
+
+
+  - name: Install PHP
+    include_tasks: php.yml
+
+  - name: Install Apache
+    include_tasks: apache.yml
+
+  - name: Install Wordpress
+    include_tasks:  wordpress.yml  
+
+  - name: Install mysql
+    include_tasks:  mysql.yml    
